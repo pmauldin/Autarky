@@ -3,12 +3,11 @@
 #include <vector>
 #include "Shader.h"
 #include "Mesh.h"
-
-#include <assimp/scene.h>
+#include "../vendor/tiny_obj_loader.h"
 
 class Model {
 public:
-    Model(const std::string &path);
+    explicit Model(const std::string &path);
     void Draw(Shader shader);
 private:
     std::vector<Mesh> meshes;
@@ -16,9 +15,7 @@ private:
     std::string directory;
 
     void loadModel(const std::string &path);
-    void processNode(aiNode *node, const aiScene *scene);
-    Mesh processMesh(aiMesh *mesh, const aiScene *scene);
-    std::vector<Texture> loadMaterialTextures(aiMaterial *mat, aiTextureType textureType, const std::string &typeName);
+    Texture loadDiffuseTexture(tinyobj::material_t &mat);
 };
 
 

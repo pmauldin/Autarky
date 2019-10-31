@@ -3,7 +3,6 @@
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-#include "vendor/tiny_obj_loader.h"
 
 #include "graphics/Shader.h"
 #include "graphics/Model.h"
@@ -27,63 +26,6 @@ float lastFrame = 0.0f;
 int main() {
     initOpenGL();
 
-    float vertices[] = {
-            -0.5f, -0.5f, -0.5f,
-            0.5f, -0.5f, -0.5f,
-            0.5f, 0.5f, -0.5f,
-            0.5f, 0.5f, -0.5f,
-            -0.5f, 0.5f, -0.5f,
-            -0.5f, -0.5f, -0.5f,
-
-            -0.5f, -0.5f, 0.5f,
-            0.5f, -0.5f, 0.5f,
-            0.5f, 0.5f, 0.5f,
-            0.5f, 0.5f, 0.5f,
-            -0.5f, 0.5f, 0.5f,
-            -0.5f, -0.5f, 0.5f,
-
-            -0.5f, 0.5f, 0.5f,
-            -0.5f, 0.5f, -0.5f,
-            -0.5f, -0.5f, -0.5f,
-            -0.5f, -0.5f, -0.5f,
-            -0.5f, -0.5f, 0.5f,
-            -0.5f, 0.5f, 0.5f,
-
-            0.5f, 0.5f, 0.5f,
-            0.5f, 0.5f, -0.5f,
-            0.5f, -0.5f, -0.5f,
-            0.5f, -0.5f, -0.5f,
-            0.5f, -0.5f, 0.5f,
-            0.5f, 0.5f, 0.5f,
-
-            -0.5f, -0.5f, -0.5f,
-            0.5f, -0.5f, -0.5f,
-            0.5f, -0.5f, 0.5f,
-            0.5f, -0.5f, 0.5f,
-            -0.5f, -0.5f, 0.5f,
-            -0.5f, -0.5f, -0.5f,
-
-            -0.5f, 0.5f, -0.5f,
-            0.5f, 0.5f, -0.5f,
-            0.5f, 0.5f, 0.5f,
-            0.5f, 0.5f, 0.5f,
-            -0.5f, 0.5f, 0.5f,
-            -0.5f, 0.5f, -0.5f
-    };
-
-    unsigned int VBO, VAO;
-
-    glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &VBO);
-
-    glBindVertexArray(VAO);
-
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*) 0);
-    glEnableVertexAttribArray(0);
-
     Shader shader("./resources/shaders/default.vert", "./resources/shaders/default.frag");
     shader.use();
 
@@ -91,33 +33,7 @@ int main() {
     glm::mat4 projection = glm::perspective(45.0f, (float) screenWidth / (float) screenHeight, 0.1f, 100.0f);
     shader.setMat4("projection", projection);
 
-    std::string modelDir = "./resources/models/nanosuit/";
-    std::string modelFile = modelDir + "nanosuit.obj";
-
-    Model nanosuit(modelFile);
-
-    // TinyObjLoader
-    tinyobj::attrib_t attrib;
-    std::vector<tinyobj::shape_t> shapes;
-    std::vector<tinyobj::material_t> materials;
-
-    std::string warn;
-    std::string err;
-
-    auto success = tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, modelFile.c_str(), modelDir.c_str(), true);
-
-    if (!warn.empty()) {
-        std::cout << warn << std::endl;
-    }
-
-    if (!err.empty()) {
-        std::cerr << err << std::endl;
-    }
-
-    if (!success) {
-        std::cerr << success << std::endl;
-        exit(1);
-    }
+    Model nanosuit("./resources/models/nanosuit/nanosuit.obj");
 
     while (!glfwWindowShouldClose(window)) {
         // Timestep
@@ -135,7 +51,7 @@ int main() {
 
         model = glm::mat4(1.0f);
         model = glm::translate(model, glm::vec3(0.0f, -2.75f, 0.0f)); // translate it down so it's at the center of the scene
-        model = glm::scale(model, glm::vec3(0.2f, 0.2f, 0.2f));	// it's a bit too big for our scene, so scale it down
+        model = glm::scale(model, glm::vec3(0.2f, 0.2f, 0.2f));    // it's a bit too big for our scene, so scale it down
         shader.setMat4("model", model);
 
         nanosuit.Draw(shader);
@@ -179,7 +95,7 @@ void initOpenGL() {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    window = glfwCreateWindow(screenWidth, screenHeight, "Autarky", NULL, NULL);
+    window = glfwCreateWindow(screenWidth, screenHeight, "Autarky", nullptr, nullptr);
     if (window == nullptr) {
         std::cerr << "Failed to create GLFW window" << std::endl;
         glfwTerminate();
