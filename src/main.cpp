@@ -11,6 +11,7 @@
 void init();
 
 void processInput(GLFWwindow *w);
+
 void framebuffer_size_callback(GLFWwindow *w, int width, int height);
 
 GLFWwindow *window;
@@ -33,12 +34,15 @@ int main() {
     shader.setMat4("view", view);
 
     Cube cube;
+    cube.transform.Position.z = -2.0f;
+    cube.transform.Rotation.x = 50.0f;
 
     while (!glfwWindowShouldClose(window)) {
         processInput(window);
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+        cube.transform.Rotation.x += 0.25f;
         cube.Draw(shader);
 
         glfwSwapBuffers(window);
@@ -81,7 +85,7 @@ void init() {
     }
 
     glEnable(GL_DEPTH_TEST);
-//    glEnable(GL_CULL_FACE);
+    glEnable(GL_CULL_FACE);
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 }
 

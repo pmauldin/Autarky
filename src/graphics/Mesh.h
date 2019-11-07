@@ -6,6 +6,8 @@
 
 struct Vertex {
     glm::vec3 Position;
+
+    explicit Vertex(glm::vec3 &position): Position(position) {}
 };
 
 class Mesh {
